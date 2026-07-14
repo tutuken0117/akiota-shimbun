@@ -360,7 +360,7 @@ const res = await fetch("https://soft-violet-9a9a.ttg0117.workers.dev/", {
         const jsonStart = cleaned.indexOf('{');
         const jsonEnd = cleaned.lastIndexOf('}');
         return JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
-        return JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
+      }
 
 async function boot(force){
   const statusBar = document.getElementById('statusBar');
