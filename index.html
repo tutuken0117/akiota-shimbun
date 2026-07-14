@@ -339,14 +339,17 @@ async function callClaudeForEdition(dateStr){
  "weather":{"summary":"","high":"","low":"","uv":"","note":""}
 }`;
 
- const res = await fetch("https://soft-violet-9a9a.ttg0117.workers.dev/", {
+const res = await fetch("https://soft-violet-9a9a.ttg0117.workers.dev/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 contents: [{
-                    parts: [{ text: `${dateStr}の広島県安芸太田町周辺のニュースや天気をGoogle検索で調べて、指定された新聞のJSON形式で1つだけ完全なデータを生成してください。` }]
+                    parts: [{ text: `${dateStr}の朝刊を、指定のJSON形式で1つだけ生成してください。` }]
                 }],
-                tools: [{ googleSearch: {} }] // Google検索を使って最新ニュースを掴む設定
+                systemInstruction: {
+                    parts: [{ text: sys }]
+                },
+                tools: [{ googleSearch: {} }] // Google検索を強制オンにする設定
             })
         });
 
@@ -356,6 +359,7 @@ async function callClaudeForEdition(dateStr){
         const cleaned = textBlock.replace(/```json\n/g, "").replace(/```/g, "").trim();
         const jsonStart = cleaned.indexOf('{');
         const jsonEnd = cleaned.lastIndexOf('}');
+        return JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
         return JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
 
 async function boot(force){
