@@ -339,24 +339,24 @@ async function callClaudeForEdition(dateStr){
  "weather":{"summary":"","high":"","low":"","uv":"","note":""}
 }`;
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      model:"claude-sonnet-4-6",
-      max_tokens:4000,
-      system:sys,
-      messages:[{role:"user", content:`${dateStr}の朝刊を、上記JSON形式で1つだけ生成してください。`}],
-      tools:[{type:"web_search_20250305", name:"web_search"}]
-    })
-  });
-  const data = await res.json();
-  const textBlock = (data.content||[]).map(b=>b.type==="text"?b.text:"").join("\n").trim();
-  const cleaned = textBlock.replace(/```json|```/g,"").trim();
-  const jsonStart = cleaned.indexOf('{');
-  const jsonEnd = cleaned.lastIndexOf('}');
-  return JSON.parse(cleaned.slice(jsonStart, jsonEnd+1));
-}
+ const res = await fetch("https://soft-violet-9a9a.ttg0117.workers.dev/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{ text: `${dateStr}の広島県安芸太田町周辺のニュースや天気をGoogle検索で調べて、指定された新聞のJSON形式で1つだけ完全なデータを生成してください。` }]
+                }],
+                tools: [{ googleSearch: {} }] // Google検索を使って最新ニュースを掴む設定
+            })
+        });
+
+        const data = await res.json();
+        // Geminiの返答テキストからJSON部分を抽出
+        const textBlock = data.candidates[0].content.parts[0].text || "";
+        const cleaned = textBlock.replace(/```json\n/g, "").replace(/```/g, "").trim();
+        const jsonStart = cleaned.indexOf('{');
+        const jsonEnd = cleaned.lastIndexOf('}');
+        return JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
 
 async function boot(force){
   const statusBar = document.getElementById('statusBar');
