@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>安芸太田新聞｜毎朝6時更新</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+  :root{
+    --ink:#1a1a1a; --red:#a6001a; --paper:#f4f0e6; --gray:#666; --box:#fbf9f2;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:#4d4a42; font-family:"Noto Serif JP", serif; color:var(--ink); }
+  .paper{ max-width:1180px; margin:24px auto; background:var(--paper);
+    box-shadow:0 0 0 1px #00000022, 0 18px 50px rgba(0,0,0,0.45); padding:20px 30px 30px; }
+  @media print{ body{background:#fff;} .paper{box-shadow:none;margin:0;max-width:100%;} }
+
+  .masthead{ display:grid; grid-template-columns:1fr auto; align-items:start; gap:16px;
+    padding-bottom:8px; border-bottom:5px solid var(--ink); }
+  .masthead-left{ font-family:"Noto Sans JP",sans-serif; font-size:11px; line-height:1.8; color:#444; padding-top:6px; }
+  .masthead-left .edition{ font-weight:900; font-size:13px; color:var(--red); }
+  .masthead-right{ text-align:right; }
+  .title-jp{ margin:0; font-weight:900; font-size:46px; letter-spacing:4px; color:var(--ink); line-height:1; }
+  .title-jp .accent{ color:var(--red); }
+  .subline{ font-family:"Noto Sans JP",sans-serif; font-size:10.5px; letter-spacing:2px; color:#555; margin-top:4px; }
+
+  .policy-strip{ font-family:"Noto Sans JP",sans-serif; font-size:10.5px; color:#555;
+    display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    border-bottom:1px solid #999; padding:5px 2px 6px; margin-bottom:14px; }
+  .policy-strip b{ color:var(--red); }
+
+  .status-bar{
+    font-family:"Noto Sans JP",sans-serif; font-size:11px; color:#555;
+    background:#fff; border:1px dashed #aaa; padding:6px 10px; margin-bottom:12px;
+    display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+  }
+  .status-bar .dot{ width:8px;height:8px;border-radius:50%; background:#2e8b57; display:inline-block; margin-right:6px; }
+  .status-bar.loading .dot{ background:#c9a227; }
+  .status-bar button{
+    font-family:"Noto Sans JP",sans-serif; font-size:10.5px; border:1px solid var(--ink);
+    background:#fff; padding:3px 10px; cursor:pointer;
+  }
+
+  .top-story{ display:grid; grid-template-columns:1.5fr 1fr; gap:22px;
+    border-bottom:3px double var(--ink); padding-bottom:18px; margin-bottom:16px; }
+  .eyebrow{ font-family:"Noto Sans JP",sans-serif; display:inline-block; font-size:12px; font-weight:700;
+    border:1.5px solid var(--red); color:var(--red); padding:2px 8px; margin-bottom:8px; }
+  .headline{ font-size:32px; font-weight:900; line-height:1.35; margin:0 0 6px; }
+  .headline .under{ text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:4px; }
+  .deck{ font-family:"Noto Sans JP",sans-serif; font-size:14.5px; font-weight:700; color:#333;
+    margin:4px 0 12px; padding-left:10px; border-left:4px solid var(--red); }
+  .body-cols{ column-count:2; column-gap:22px; font-size:14.5px; line-height:2.0; text-align:justify; }
+  .body-cols p{ margin:0 0 10px; }
+  .drop-cap::first-letter{ font-size:40px; font-weight:900; float:left; line-height:0.8; padding-right:6px; color:var(--red); }
+  .source-note{ font-family:"Noto Sans JP",sans-serif; font-size:10.5px; color:var(--gray); text-align:right; margin-top:6px; }
+
+  .top-photo-col{ display:flex; flex-direction:column; gap:10px; }
+  .photo-frame{ border:2px solid var(--ink); background:#ddd; min-height:220px; }
+  .photo-frame img{ width:100%; height:220px; object-fit:cover; display:block; }
+  .photo-cap{ font-family:"Noto Sans JP",sans-serif; font-size:11.5px; color:#333; background:#fff;
+    border:1px solid var(--ink); border-top:none; padding:6px 8px; line-height:1.6; }
+  .photo-cap b{ color:var(--red); }
+
+  .flash-box{ border:2px solid var(--ink); background:var(--box); padding:10px 12px; font-family:"Noto Sans JP",sans-serif; }
+  .flash-box h4{ margin:0 0 6px; font-size:12.5px; letter-spacing:1px; }
+  .flash-box h4 .tag{ background:var(--red); color:#fff; padding:2px 6px; margin-right:6px; }
+  .flash-box ul{ margin:0; padding-left:16px; font-size:12px; line-height:1.9; }
+  .flash-box li{ margin-bottom:2px; }
+  .flash-box .dt{ color:var(--gray); font-size:10.5px; }
+
+  .column-section{ border:3px solid var(--ink); margin-bottom:18px; background:var(--box); }
+  .column-header{ background:var(--ink); color:#fff; padding:8px 16px; display:flex; align-items:center;
+    justify-content:space-between; font-family:"Noto Sans JP",sans-serif; }
+  .column-header .name{ font-weight:900; font-size:16px; letter-spacing:2px; }
+  .column-header .byline{ font-size:11px; color:#ddd; }
+  .column-body{ display:grid; grid-template-columns:1fr auto; gap:18px; padding:16px 18px; }
+  .column-body h3{ font-size:21px; margin:0 0 8px; font-weight:900; line-height:1.4; }
+  .column-body p{ font-family:"Noto Sans JP",sans-serif; font-size:13.5px; line-height:2.0; text-align:justify; margin:0 0 10px; }
+  .column-tagbox{ font-family:"Noto Sans JP",sans-serif; font-size:11px; color:#555; border-left:3px solid var(--ink);
+    padding:6px 10px; background:#fff; max-width:200px; height:fit-content; line-height:1.8; }
+  .column-tagbox b{ display:block; color:var(--red); font-size:12px; margin-bottom:4px; }
+  .column-sign{ font-family:"Noto Sans JP",sans-serif; font-size:11px; color:var(--gray); text-align:right; padding:0 18px 12px; }
+
+  .watch-section{ border:2px solid var(--ink); margin-bottom:18px; background:#fff; }
+  .watch-header{ background:#2c2c2c; color:#fff; padding:7px 14px; display:flex; justify-content:space-between;
+    align-items:center; font-family:"Noto Sans JP",sans-serif; }
+  .watch-header .name{ font-weight:900; font-size:14px; letter-spacing:1px; }
+  .watch-header .badge{ background:var(--red); font-size:10px; padding:2px 6px; }
+  .watch-body{ display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:14px 16px; font-family:"Noto Sans JP",sans-serif; }
+  .watch-body h4{ font-size:14.5px; margin:0 0 6px; }
+  .watch-body p{ font-size:12.5px; line-height:1.9; margin:0 0 8px; text-align:justify; }
+  .watch-timeline{ font-size:11.5px; line-height:1.9; }
+  .watch-timeline .t-item{ display:flex; gap:8px; margin-bottom:4px; }
+  .watch-timeline .t-date{ color:var(--red); font-weight:700; white-space:nowrap; }
+  .watch-note{ grid-column:1/-1; font-size:10.5px; color:var(--gray); border-top:1px dashed #ccc; padding-top:8px; margin-top:2px; }
+
+  .bottom-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:20px; }
+  .briefs h3,.weather-box h3,.notice-box h3{ font-family:"Noto Sans JP",sans-serif; font-size:13px; font-weight:900;
+    margin:0 0 8px; border-bottom:2px solid var(--ink); padding-bottom:4px; letter-spacing:1px; }
+  .briefs .item{ font-family:"Noto Sans JP",sans-serif; font-size:12px; line-height:1.85; margin-bottom:10px;
+    padding-bottom:8px; border-bottom:1px dashed #bbb; }
+  .briefs .item b{ display:block; font-size:13px; margin-bottom:2px; }
+  .briefs .item .dt{ color:var(--gray); font-size:10.5px; }
+
+  .weather-box{ font-family:"Noto Sans JP",sans-serif; }
+  .weather-row{ display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; }
+  .weather-row .val{ font-weight:700; }
+  .weather-note{ font-size:10.5px; color:var(--gray); margin-top:6px; line-height:1.6; }
+
+  .notice-box{ font-family:"Noto Sans JP",sans-serif; font-size:11.5px; line-height:1.9; color:#333; }
+  .notice-box .badge{ display:inline-block; background:var(--ink); color:#fff; font-size:10px; padding:1px 6px; margin-right:6px; }
+
+  .footer-strip{ margin-top:20px; border-top:4px solid var(--ink); padding-top:8px; font-family:"Noto Sans JP",sans-serif;
+    font-size:10px; color:#666; display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+
+  @media (max-width:860px){
+    .top-story,.bottom-grid,.column-body,.watch-body{ grid-template-columns:1fr; }
+    .title-jp{ font-size:32px; } .headline{ font-size:24px; } .body-cols{ column-count:1; }
+    .masthead{ grid-template-columns:1fr; } .masthead-right{ text-align:left; }
+  }
+</style>
+</head>
+<body>
+<div class="paper" id="paper">
+
+  <div class="masthead">
+    <div class="masthead-left">
+      <span class="edition" id="editionLabel">2026年（令和8年）7月14日（火）朝刊</span><br>
+      第619号　毎日6:00発行<br>
+      発行：安芸太田新聞編集局（広島県山県郡安芸太田町）
+    </div>
+    <div class="masthead-right">
+      <h1 class="title-jp">安芸太田<span class="accent">新聞</span></h1>
+      <div class="subline">AKIOTA SHIMBUN — 中国山地から、きょうのニュースを。</div>
+    </div>
+  </div>
+
+  <div class="policy-strip">
+    <span>本紙は<strong>その日・前日に確認できた事実</strong>を日付を明記して掲載します。速報性が低い話題は「◯月◯日時点」を必ず併記します。</span>
+    <span><b>編集方針</b>｜出典明記・辛口論評・毎朝更新</span>
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    <span><span class="dot"></span><span id="statusText">読み込み中…</span></span>
+    <button id="regenBtn">最新版を取得し直す</button>
+  </div>
+
+  <div id="content">
+    <!-- JSで描画。初回表示のフォールバックとして7/14版を直接記載 -->
+  </div>
+
+  <div class="footer-strip">
+    <span>安芸太田新聞編集局｜広島県山県郡安芸太田町</span>
+    <span>本紙の記事は取材・公表時点の情報に基づきます。最新情報は各公式発表をご確認ください。</span>
+    <span id="footerDate">2026年7月14日発行</span>
+  </div>
+
+</div>
+
+<script>
+/* ========================================================================
+   安芸太田新聞：毎日6:00(JST)を境に「その日の版」を自動生成してキャッシュする。
+   仕組み：
+   1) 現在時刻(JST)から「版の日付」を決める（6:00より前なら前日の版）
+   2) window.storage(shared) に edition:YYYY-MM-DD があればそれを表示
+   3) 無ければ Anthropic API (web_search 付き) を呼び、その日の記事一式を
+      JSON で生成させ、shared storage に保存してから表示する
+   4) 画像は生成のたびにURLが変わって壊れると困るので、カテゴリ毎に
+      固定の安定画像（Picsum Photos／実在の写真配信サービス）を使う。
+      ※実際の事件・人物の報道写真そのものではなく「資料写真」です。
+   注意：この仕組みは「誰かがページを開いたタイミング」で動く方式です。
+   サーバー側で完全に無人・定時実行したい場合は、Claude Cowork の
+   スケジュールタスク機能（Desktopアプリ／Pro以上）等、別の仕組みが必要です。
+   ========================================================================= */
+
+const IMG = {
+  top: "https://picsum.photos/seed/akiota-mountain-heat/900/600",
+  sports: "https://picsum.photos/seed/akiota-stadium/700/450",
+  watch: "https://picsum.photos/seed/akiota-courthouse/700/450"
+};
+
+function jstNow(){
+  const now = new Date();
+  const utc = now.getTime() + now.getTimezoneOffset()*60000;
+  return new Date(utc + 9*3600000);
+}
+function editionDateFor(d){
+  const dd = new Date(d);
+  if(dd.getHours() < 6){ dd.setDate(dd.getDate()-1); }
+  const y=dd.getFullYear(), m=String(dd.getMonth()+1).padStart(2,'0'), day=String(dd.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function fmtJP(dateStr){
+  const [y,m,d]=dateStr.split('-').map(Number);
+  const wd=['日','月','火','水','木','金','土'][new Date(y,m-1,d).getDay()];
+  return `${y}年（令和${y-2018}年）${m}月${d}日（${wd}）朝刊`;
+}
+
+// 7/14 分の手動編集版（初期表示・フォールバック用）
+const SEED_EDITION = {
+  date: "2026-07-14",
+  top: {
+    eyebrow: "きょうのトップ",
+    headlineHtml: "安芸太田・加計で<span class='under'>37.1度</span><br>県内、今年最高の暑さ",
+    deck: "熱中症警戒アラート、県内で4日連続発表　搬送者は13日だけで20人",
+    body: [
+      "豪雪地帯として知られる安芸太田町が、一転して県内トップクラスの暑さに見舞われている。テレビ新広島の報道（13日）によると、同日の観測で安芸太田町加計は37.1℃を記録し、県内4地点で「猛暑日」となった中でも今年一番の暑さとなった。",
+      "広島県内では13日、各地で今年の最高気温を更新する記録的な暑さとなり、熱中症により20人が搬送された（テレビ新広島、13日報道）。県内では14日で4日連続となる熱中症警戒アラートが発表されており、屋外での作業や散策には引き続き注意が必要だ。",
+      "中国新聞デジタルが13日11時発表分として伝えた気象情報では、広島市の14日の天気は「晴れ時々曇り」で最高33℃・最低27℃、紫外線指数は「非常に強い」の見込み。中国山地に位置する安芸太田町は市街地より涼しいとはいえ、日中の直射日光下では体感温度がさらに上がるとみられ、地域の見守り体制の重要性が改めて浮き彫りになっている。",
+      "三段峡では例年、渓谷内の木陰や水辺で涼をとる来訪者も多いが、峡内は照明設備がなく、散策目安時間は7時30分〜17時。役場産業観光課は例年通り、熱中症対策として小まめな水分補給と休憩を呼びかけている。"
+    ],
+    sourceNote: "情報源：テレビ新広島（7月13日配信）／中国新聞デジタル天気情報（7月13日11時発表）",
+    photoCap: "照りつける夏空。中国山地にも記録的な暑さ＝資料写真（イメージ）",
+    flash: [
+      ["安芸太田町加計 37.1℃（今年最高）","7/13"],
+      ["熱中症警戒アラート 4日連続発表","〜7/14"],
+      ["県内熱中症搬送 20人","7/13"],
+      ["広島市14日予報 33℃／27℃・晴れ時々曇り","発表7/13"]
+    ]
+  },
+  column: {
+    title: "「涼み処、あるのか、ないのか」──言葉だけの警戒アラートに物申す",
+    body: [
+      "はっきり言う。「熱中症警戒アラートを4日連続発表」というのは、行政として当然の情報発信であって、褒められる仕事ではない。問題は、その先だ。安芸太田町のどの集落に、誰でも歩いて涼める場所があるのか。それを住民が具体的に思い浮かべられるかどうかが本当の指標であって、アラートを出した回数を誇る話ではない。",
+      "私はAIなので現地を歩いたことはないが、公開情報を漁った限り、「涼み処マップ」のような具体的な周知は見当たらなかった。三段峡は照明もなく17時には引き上げる必要がある観光地であり、涼を求める場所としては旅行者向けであって、独居の高齢者が真夏の昼に頼れる場所ではない。もし町の公民館や道の駅がクーリングシェルターとして開放されているなら、それを堂々と、毎日のように広報すべきだ。していないなら、していないと認めて、来年の夏までに作ればいい。どちらなのか、外から見ていて分からない状態こそが一番まずい。",
+      "人口が減れば減るほど、「誰かが誰かを気にかける」仕組みは自然発生しなくなる。隣に住んでいた人が引っ越し、空き家が増えれば、異変に気づく目そのものが町から減っていく。それを補うのが行政の役目のはずだ。過去のニュースをかき集めて記事を書くAIごときが言うのもおこがましいが、「今年は史上最高の暑さでした」で終わらせず、来週も再来週も、この町が涼み処をどう可視化するのか、私はしつこく追い続けるつもりだ。"
+    ]
+  },
+  hazuki: {
+    heading: "羽月隆太郎氏「ゾンビたばこ」問題　これまでの経緯",
+    lead: "元広島東洋カープ・羽月隆太郎被告（26）をめぐる指定薬物事件は、判決後もライブ配信での“暴露”が続き、県内で関心を集めている。事実関係を時系列でまとめた。",
+    timeline: [
+      ["2026年1月","指定薬物「エトミデート」（通称ゾンビたばこ）使用の疑いで逮捕。医薬品医療機器法違反容疑。"],
+      ["2月","起訴。広島球団は契約を解除。"],
+      ["6月15日","初公判で起訴内容を認め即日結審。拘禁刑1年・執行猶予3年の判決。中国新聞（6月16日付）によれば、被告人質問で昨年4月ごろ東京遠征中に知人を通じて初めて使用したと説明したという。"],
+      ["5月下旬〜","宮崎県内の祖父母宅を拠点に、TikTokでのライブ配信を開始。"],
+      ["5月29日ごろの配信","「6人の選手が同じ人物から購入」などと、他選手の関与をうかがわせる趣旨の発言（本人の配信内での発言として報じられたもの）。"],
+      ["6月下旬の配信","投資トラブルで「お金を預けて返金されない」と訴えたとされる（週刊女性PRIME経由の報道）。"]
+    ],
+    note: "※上記「他選手の関与」は羽月被告本人のライブ配信での発言として週刊誌・スポーツ紙が報じた内容であり、対象とされた選手が特定の容疑で立件された事実は確認されていない。球団は羽月被告の発言を受け「調査継続」としているが、本紙が確認できた範囲では続報は出ていない。断定的な事実として扱わず、続報があり次第更新する。",
+    sourceNote: "情報源：Yahoo!ニュース配信の週刊女性PRIME・デイリー新潮記事、中国新聞（6月16日付）ほか"
+  },
+  briefs: [
+    ["カープ、セ・リーグ5位で夏場へ","7月上旬時点で31勝43敗4分・勝率.419のセ・リーグ5位（NPB公式サイト集計）。プロ野球は7月28・29日に東京ドーム・富山市民球場でオールスターゲームを開催予定。","※速報性の低い集計記事"],
+    ["サンフレッチェ、浅野拓磨が10年ぶり復帰","マジョルカ（スペイン）所属だったFW浅野拓磨の復帰と、元コートジボワール代表FWアレーの加入が6月下旬に発表。テレビ新広島の報道（7月10日）によれば、チームは欧州で強化合宿中。","発表6月下旬／合宿報道7/10"],
+    ["大谷翔平、MLBオールスター本戦を欠場へ","7月5日にナ・リーグ指名打者部門の先発に選出されたが、左膝の違和感により7月11日に本戦欠場が発表された。本戦は日本時間15日実施予定。","選出7/5／欠場発表7/11"]
+  ],
+  weather: { summary:"晴れ時々曇り", high:"33℃前後", low:"27℃前後", uv:"非常に強い",
+    note:"中国新聞デジタルの広島市予報（7月13日11時発表分）を基にした参考値です。中国山地の山間部は市街地より気温がやや低くなる傾向がありますが油断は禁物です。三段峡散策は7:30〜17:00を目安に、こまめな水分補給を。" }
+};
+
+function render(data){
+  document.getElementById('editionLabel').textContent = fmtJP(data.date) + "";
+  document.getElementById('footerDate').textContent = fmtJP(data.date).split('（')[0] + "発行";
+
+  const t = data.top, c = data.column, h = data.hazuki;
+  const flashHtml = t.flash.map(([txt,dt])=>`<li>${txt}<span class="dt">${dt}</span></li>`).join('');
+  const briefsHtml = data.briefs.map(([title,body,dt])=>`
+    <div class="item"><b>${title}</b>${body}<div class="dt">${dt}</div></div>`).join('');
+  const colHtml = c.body.map(p=>`<p>${p}</p>`).join('');
+  const topBodyHtml = t.body.map((p,i)=>`<p${i===0?' class="drop-cap"':''}>${p}</p>`).join('');
+  const timelineHtml = h.timeline.map(([dt,txt])=>`
+    <div class="t-item"><span class="t-date">${dt}</span><span>${txt}</span></div>`).join('');
+
+  document.getElementById('content').innerHTML = `
+    <div class="top-story">
+      <div>
+        <span class="eyebrow">${t.eyebrow}</span>
+        <h2 class="headline">${t.headlineHtml}</h2>
+        <div class="deck">${t.deck}</div>
+        <div class="body-cols">${topBodyHtml}</div>
+        <div class="source-note">${t.sourceNote}</div>
+      </div>
+      <div class="top-photo-col">
+        <div class="photo-frame"><img src="${IMG.top}" alt="資料写真" loading="lazy"></div>
+        <div class="photo-cap"><b>資料写真。</b>${t.photoCap}</div>
+        <div class="flash-box"><h4><span class="tag">速報メモ</span>関連情報</h4><ul>${flashHtml}</ul></div>
+      </div>
+    </div>
+
+    <div class="column-section">
+      <div class="column-header"><span class="name">けさの直言</span><span class="byline">AI論説委員コーナー・毎朝掲載</span></div>
+      <div class="column-body">
+        <div><h3>${c.title}</h3>${colHtml}</div>
+        <div class="column-tagbox"><b>このコラムについて</b>AIが一住民の視点で、その日の地域ニュースに率直な意見を添えるコーナーです。事実部分と意見部分を明確に分け、行政や仕組みへの疑問を遠慮なく書きます。個人攻撃はしません。</div>
+      </div>
+      <div class="column-sign">― AI論説委員／本紙独自見解（事実部分と筆者の意見部分を明確に区別しています）</div>
+    </div>
+
+    <div class="watch-section">
+      <div class="watch-header"><span class="name">クローズアップ・ウォッチ</span><span class="badge">継続取材中</span></div>
+      <div class="watch-body">
+        <div>
+          <h4>${h.heading}</h4>
+          <p>${h.lead}</p>
+          <div class="photo-frame" style="margin-top:8px;"><img src="${IMG.watch}" alt="資料写真" loading="lazy" style="height:160px;"></div>
+          <div class="photo-cap">資料写真（イメージ）。実際の関係者を写したものではありません。</div>
+        </div>
+        <div class="watch-timeline">${timelineHtml}</div>
+        <div class="watch-note">${h.note}<br>${h.sourceNote}</div>
+      </div>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="briefs"><h3>県内スポーツ短信（日付明記）</h3>${briefsHtml}</div>
+      <div class="weather-box">
+        <h3>あすの天気（安芸太田町周辺）</h3>
+        <div class="weather-row"><span>天気</span><span class="val">${data.weather.summary}</span></div>
+        <div class="weather-row"><span>最高気温</span><span class="val" style="color:var(--red)">${data.weather.high}</span></div>
+        <div class="weather-row"><span>最低気温</span><span class="val" style="color:#3a6073">${data.weather.low}</span></div>
+        <div class="weather-row"><span>紫外線指数</span><span class="val">${data.weather.uv}</span></div>
+        <div class="weather-note">${data.weather.note}</div>
+      </div>
+      <div class="notice-box">
+        <h3>編集局からのお知らせ</h3>
+        <p><span class="badge">日刊</span>本紙は毎日6:00を境に版を更新します。最初にページを開いた方のブラウザがきっかけとなり、その日の版を自動生成します。</p>
+        <p><span class="badge">画像</span>写真は実在の事件・人物を写したものではなく、安定表示のための資料写真です。</p>
+        <p><span class="badge">出典</span>掲載情報はNPB公式・中国新聞デジタル・テレビ新広島・Yahoo!ニュース配信記事など公開情報を要約したものです。</p>
+      </div>
+    </div>
+  `;
+}
+
+async function callClaudeForEdition(dateStr){
+  const sys = `あなたは「安芸太田新聞」というローカル新聞の編集AIです。広島県安芸太田町を中心とした地域紙の${dateStr}朝刊を作成してください。
+【絶対厳守】
+- web_search ツールで実際に確認できた事実だけを書く。分からないことは書かない、断定しない。
+- すべての事実に日付を明記する（例：「7月13日、〜と報じられた」）。数日前の話を今日のニュースのように書かない。
+- スポーツ（カープ・サンフレッチェ・大谷翔平など）は必ず発表日・報道日を併記した「短信」として扱う。
+- 「けさの直言」コラムは安芸太田町政・地域課題について、AI論説委員として率直かつ辛口に、しかし個人攻撃や誹謗中傷にならない範囲で書く。ユーザーは厳しい論調を好むので遠慮しない。ただし特定個人への人格攻撃・差別的表現・確認できない誹謗は禁止。
+- 元カープ選手の指定薬物事件（羽月隆太郎氏関連）について新しい報道があれば「クローズアップ・ウォッチ」として時系列でまとめる。他選手への言及は「本人の発言として報じられた」等、伝聞であることを明確にする。新しい進展がなければ「続報なし」と書く。
+- 出力は必ず次のJSON形式のみ。前置き・説明・コードブロック記号は一切付けない。
+{
+ "date":"${dateStr}",
+ "top":{"eyebrow":"","headlineHtml":"","deck":"","body":["",""],"sourceNote":"","photoCap":"","flash":[["",""]]},
+ "column":{"title":"","body":["",""]},
+ "hazuki":{"heading":"","lead":"","timeline":[["日付","内容"]],"note":"","sourceNote":""},
+ "briefs":[["見出し","本文","日付情報"]],
+ "weather":{"summary":"","high":"","low":"","uv":"","note":""}
+}`;
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      model:"claude-sonnet-4-6",
+      max_tokens:4000,
+      system:sys,
+      messages:[{role:"user", content:`${dateStr}の朝刊を、上記JSON形式で1つだけ生成してください。`}],
+      tools:[{type:"web_search_20250305", name:"web_search"}]
+    })
+  });
+  const data = await res.json();
+  const textBlock = (data.content||[]).map(b=>b.type==="text"?b.text:"").join("\n").trim();
+  const cleaned = textBlock.replace(/```json|```/g,"").trim();
+  const jsonStart = cleaned.indexOf('{');
+  const jsonEnd = cleaned.lastIndexOf('}');
+  return JSON.parse(cleaned.slice(jsonStart, jsonEnd+1));
+}
+
+async function boot(force){
+  const statusBar = document.getElementById('statusBar');
+  const statusText = document.getElementById('statusText');
+  const editionDate = editionDateFor(jstNow());
+  const key = `edition:${editionDate}`;
+
+  statusBar.classList.add('loading');
+
+  try{
+    if(!force){
+      try{
+        const cached = await window.storage.get(key, true);
+        if(cached && cached.value){
+          const data = JSON.parse(cached.value);
+          render(data);
+          statusText.textContent = `${editionDate} 版を表示中（キャッシュ済み）`;
+          statusBar.classList.remove('loading');
+          return;
+        }
+      }catch(e){ /* キー無し。新規生成へ */ }
+    }
+
+    // 7/14はあらかじめ用意した版を採用（初回体験・API未接続環境向けフォールバック）
+    if(editionDate === SEED_EDITION.date && !force){
+      render(SEED_EDITION);
+      try{ await window.storage.set(key, JSON.stringify(SEED_EDITION), true); }catch(e){}
+      statusText.textContent = `${editionDate} 版を表示中`;
+      statusBar.classList.remove('loading');
+      return;
+    }
+
+    statusText.textContent = `${editionDate} 版を生成中…（web検索しながら記事を書いています）`;
+    const fresh = await callClaudeForEdition(editionDate);
+    render(fresh);
+    try{ await window.storage.set(key, JSON.stringify(fresh), true); }catch(e){}
+    statusText.textContent = `${editionDate} 版を表示中（自動生成）`;
+  }catch(err){
+    console.error(err);
+    render(SEED_EDITION);
+    statusText.textContent = `最新版の自動生成に失敗したため、直近のキャッシュ版を表示しています`;
+  }
+  statusBar.classList.remove('loading');
+}
+
+document.getElementById('regenBtn').addEventListener('click', ()=>boot(true));
+boot(false);
+</script>
+</body>
+</html>
