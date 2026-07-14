@@ -126,7 +126,7 @@
   <div class="masthead">
     <div class="masthead-left">
       <span class="edition" id="editionLabel">2026年（令和8年）7月14日（火）朝刊</span><br>
-      第619号　毎日6:00発行<br>
+      第619号 毎日6:00発行<br>
       発行：安芸太田新聞編集局（広島県山県郡安芸太田町）
     </div>
     <div class="masthead-right">
@@ -146,8 +146,7 @@
   </div>
 
   <div id="content">
-    <!-- JSで描画。初回表示のフォールバックとして7/14版を直接記載 -->
-  </div>
+    </div>
 
   <div class="footer-strip">
     <span>安芸太田新聞編集局｜広島県山県郡安芸太田町</span>
@@ -158,21 +157,6 @@
 </div>
 
 <script>
-/* ========================================================================
-   安芸太田新聞：毎日6:00(JST)を境に「その日の版」を自動生成してキャッシュする。
-   仕組み：
-   1) 現在時刻(JST)から「版の日付」を決める（6:00より前なら前日の版）
-   2) window.storage(shared) に edition:YYYY-MM-DD があればそれを表示
-   3) 無ければ Anthropic API (web_search 付き) を呼び、その日の記事一式を
-      JSON で生成させ、shared storage に保存してから表示する
-   4) 画像は生成のたびにURLが変わって壊れると困るので、カテゴリ毎に
-      固定の安定画像（Picsum Photos／実在の写真配信サービス）を使う。
-      ※実際の事件・人物の報道写真そのものではなく「資料写真」です。
-   注意：この仕組みは「誰かがページを開いたタイミング」で動く方式です。
-   サーバー側で完全に無人・定時実行したい場合は、Claude Cowork の
-   スケジュールタスク機能（Desktopアプリ／Pro以上）等、別の仕組みが必要です。
-   ========================================================================= */
-
 const IMG = {
   top: "https://picsum.photos/seed/akiota-mountain-heat/900/600",
   sports: "https://picsum.photos/seed/akiota-stadium/700/450",
@@ -184,25 +168,14 @@ function jstNow(){
   const utc = now.getTime() + now.getTimezoneOffset()*60000;
   return new Date(utc + 9*3600000);
 }
-function editionDateFor(d){
-  const dd = new Date(d);
-  if(dd.getHours() < 6){ dd.setDate(dd.getDate()-1); }
-  const y=dd.getFullYear(), m=String(dd.getMonth()+1).padStart(2,'0'), day=String(dd.getDate()).padStart(2,'0');
-  return `${y}-${m}-${day}`;
-}
-function fmtJP(dateStr){
-  const [y,m,d]=dateStr.split('-').map(Number);
-  const wd=['日','月','火','水','木','金','土'][new Date(y,m-1,d).getDay()];
-  return `${y}年（令和${y-2018}年）${m}月${d}日（${wd}）朝刊`;
-}
-
+...
 // 7/14 分の手動編集版（初期表示・フォールバック用）
 const SEED_EDITION = {
   date: "2026-07-14",
   top: {
     eyebrow: "きょうのトップ",
     headlineHtml: "安芸太田・加計で<span class='under'>37.1度</span><br>県内、今年最高の暑さ",
-    deck: "熱中症警戒アラート、県内で4日連続発表　搬送者は13日だけで20人",
+    deck: "熱中症警戒アラート、県内で4日連続発表 搬送者は13日だけで20人",
     body: [
       "豪雪地帯として知られる安芸太田町が、一転して県内トップクラスの暑さに見舞われている。テレビ新広島の報道（13日）によると、同日の観測で安芸太田町加計は37.1℃を記録し、県内4地点で「猛暑日」となった中でも今年一番の暑さとなった。",
       "広島県内では13日、各地で今年の最高気温を更新する記録的な暑さとなり、熱中症により20人が搬送された（テレビ新広島、13日報道）。県内では14日で4日連続となる熱中症警戒アラートが発表されており、屋外での作業や散策には引き続き注意が必要だ。",
@@ -222,12 +195,12 @@ const SEED_EDITION = {
     title: "「涼み処、あるのか、ないのか」──言葉だけの警戒アラートに物申す",
     body: [
       "はっきり言う。「熱中症警戒アラートを4日連続発表」というのは、行政として当然の情報発信であって、褒められる仕事ではない。問題は、その先だ。安芸太田町のどの集落に、誰でも歩いて涼める場所があるのか。それを住民が具体的に思い浮かべられるかどうかが本当の指標であって、アラートを出した回数を誇る話ではない。",
-      "私はAIなので現地を歩いたことはないが、公開情報を漁った限り、「涼み処マップ」のような具体的な周知は見当たらなかった。三段峡は照明もなく17時には引き上げる必要がある観光地であり、涼を求める場所としては旅行者向けであって、独居の高齢者が真夏の昼に頼れる場所ではない。もし町の公民館や道の駅がクーリングシェルターとして開放されているなら、それを堂々と、毎日のように広報すべきだ。していないなら、していないと認めて、来年の夏までに作ればいい。どちらなのか、外から見ていて分からない状態こそが一番まずい。",
+      "私はAIので現地を歩いたことはないが、公開情報を漁った限り、「涼み処マップ」のような具体的な周知は見当たらなかった。三段峡は照明もなく17時には引き上げる必要がある観光地であり、涼を求める場所としては旅行者向けであって、独居の高齢者が真夏の昼に頼れる場所ではない。もし町の公民館や道の駅がクーリングシェルターとして開放されているなら、それを堂々と、毎日のように広報すべきだ。していないなら、していないと認めて、来年の夏までに作ればいい。どちらなのか、外から見ていて分からない状態こそが一番まずい。",
       "人口が減れば減るほど、「誰かが誰かを気にかける」仕組みは自然発生しなくなる。隣に住んでいた人が引っ越し、空き家が増えれば、異変に気づく目そのものが町から減っていく。それを補うのが行政の役目のはずだ。過去のニュースをかき集めて記事を書くAIごときが言うのもおこがましいが、「今年は史上最高の暑さでした」で終わらせず、来週も再来週も、この町が涼み処をどう可視化するのか、私はしつこく追い続けるつもりだ。"
     ]
   },
   hazuki: {
-    heading: "羽月隆太郎氏「ゾンビたばこ」問題　これまでの経緯",
+    heading: "羽月隆太郎氏「ゾンビたばこ」問題 これまでの経緯",
     lead: "元広島東洋カープ・羽月隆太郎被告（26）をめぐる指定薬物事件は、判決後もライブ配信での“暴露”が続き、県内で関心を集めている。事実関係を時系列でまとめた。",
     timeline: [
       ["2026年1月","指定薬物「エトミデート」（通称ゾンビたばこ）使用の疑いで逮捕。医薬品医療機器法違反容疑。"],
@@ -313,7 +286,7 @@ function render(data){
       </div>
       <div class="notice-box">
         <h3>編集局からのお知らせ</h3>
-        <p><span class="badge">日刊</span>本紙は毎日6:00を境に版を更新します。最初にページを開いた方のブラウザがきっかけとなり、その日の版を自動生成します。</p>
+        <p><span class="badge">日刊</span>本紙は毎日 6:00 を境に版を更新します。最初にページを開いた方のブラウザがきっかけとなり、その日の版を自動生成します。</p>
         <p><span class="badge">画像</span>写真は実在の事件・人物を写したものではなく、安定表示のための資料写真です。</p>
         <p><span class="badge">出典</span>掲載情報はNPB公式・中国新聞デジタル・テレビ新広島・Yahoo!ニュース配信記事など公開情報を要約したものです。</p>
       </div>
@@ -321,10 +294,22 @@ function render(data){
   `;
 }
 
+function editionDateFor(d){
+  const dd = new Date(d);
+  if(dd.getHours() < 6){ dd.setDate(dd.getDate()-1); }
+  const y=dd.getFullYear(), m=String(dd.getMonth()+1).padStart(2,'0'), day=String(dd.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function fmtJP(dateStr){
+  const [y,m,d]=dateStr.split('-').map(Number);
+  const wd=['日','月','火','水','木','金','土'][new Date(y,m-1,d).getDay()];
+  return `${y}年（令和${y-2018}年）${m}月${d}日（${wd}）朝刊`;
+}
+
 async function callClaudeForEdition(dateStr){
   const sys = `あなたは「安芸太田新聞」というローカル新聞の編集AIです。広島県安芸太田町を中心とした地域紙の${dateStr}朝刊を作成してください。
 【絶対厳守】
-- web_search ツールで実際に確認できた事実だけを書く。分からないことは書かない、断定しない。
+- Google検索で実際に確認できた事実だけを書く。分からないことは書かない、断定しない。
 - すべての事実に日付を明記する（例：「7月13日、〜と報じられた」）。数日前の話を今日のニュースのように書かない。
 - スポーツ（カープ・サンフレッチェ・大谷翔平など）は必ず発表日・報道日を併記した「短信」として扱う。
 - 「けさの直言」コラムは安芸太田町政・地域課題について、AI論説委員として率直かつ辛口に、しかし個人攻撃や誹謗中傷にならない範囲で書く。ユーザーは厳しい論調を好むので遠慮しない。ただし特定個人への人格攻撃・差別的表現・確認できない誹謗は禁止。
@@ -339,28 +324,49 @@ async function callClaudeForEdition(dateStr){
  "weather":{"summary":"","high":"","low":"","uv":"","note":""}
 }`;
 
-const res = await fetch("https://soft-violet-9a9a.ttg0117.workers.dev/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{ text: `${dateStr}の朝刊を、指定のJSON形式で1つだけ生成してください。` }]
-                }],
-                systemInstruction: {
-                    parts: [{ text: sys }]
-                },
-                tools: [{ googleSearch: {} }] // Google検索を強制オンにする設定
-            })
-        });
+  const res = await fetch("https://soft-violet-9a9a.ttg0117.workers.dev/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+          contents: [{
+              parts: [{ text: `${dateStr}の朝刊を、指定のJSON形式で1つだけ生成してください。` }]
+          }],
+          systemInstruction: {
+              parts: [{ text: sys }]
+          },
+          tools: [{ googleSearch: {} }]
+      })
+  });
 
-        const data = await res.json();
-        // Geminiの返答テキストからJSON部分を抽出
-        const textBlock = data.candidates[0].content.parts[0].text || "";
-        const cleaned = textBlock.replace(/```json\n/g, "").replace(/```/g, "").trim();
-        const jsonStart = cleaned.indexOf('{');
-        const jsonEnd = cleaned.lastIndexOf('}');
-        return JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
+  // エラーハンドリングの強化：404などのエラー時に詳細を拾う
+  if (!res.ok) {
+      let detail = "";
+      try {
+          const errJson = await res.json();
+          detail = errJson.error || JSON.stringify(errJson);
+      } catch(e) {
+          detail = await res.text();
       }
+      throw new Error(`[通信エラー ${res.status}] ${detail}`);
+  }
+
+  const data = await res.json();
+  
+  if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
+      throw new Error("Google APIから正しく記事データが返されませんでした。データ構造が不正です: " + JSON.stringify(data));
+  }
+
+  const textBlock = data.candidates[0].content.parts[0].text || "";
+  const cleaned = textBlock.replace(/```json\n/g, "").replace(/```/g, "").trim();
+  const jsonStart = cleaned.indexOf('{');
+  const jsonEnd = cleaned.lastIndexOf('}');
+  
+  if (jsonStart === -1 || jsonEnd === -1) {
+      throw new Error("AIの文章から新聞用データ(JSON)を切り出せませんでした。文章内容: " + textBlock);
+  }
+
+  return JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
+}
 
 async function boot(force){
   const statusBar = document.getElementById('statusBar');
@@ -381,10 +387,9 @@ async function boot(force){
           statusBar.classList.remove('loading');
           return;
         }
-      }catch(e){ /* キー無し。新規生成へ */ }
+      }catch(e){ }
     }
 
-    // 7/14はあらかじめ用意した版を採用（初回体験・API未接続環境向けフォールバック）
     if(editionDate === SEED_EDITION.date && !force){
       render(SEED_EDITION);
       try{ await window.storage.set(key, JSON.stringify(SEED_EDITION), true); }catch(e){}
@@ -401,7 +406,8 @@ async function boot(force){
   }catch(err){
     console.error(err);
     render(SEED_EDITION);
-    statusText.textContent = `最新版の自動生成に失敗したため、直近のキャッシュ版を表示しています`;
+    // エラーメッセージを画面のステータス欄に赤字でダイレクトに表示させる
+    statusText.innerHTML = `<span style="color:#d9534f; font-weight:bold;">生成失敗: ${err.message}</span>`;
   }
   statusBar.classList.remove('loading');
 }
