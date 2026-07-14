@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>安芸太田新聞｜毎朝6時更新</title>
+<title>安芸太田新聞｜リアルタイム自動生成</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
 
@@ -125,33 +125,34 @@
 
   <div class="masthead">
     <div class="masthead-left">
-      <span class="edition" id="editionLabel">2026年（令和8年）7月14日（火）朝刊</span><br>
-      第619号 毎日6:00発行<br>
+      <span class="edition" id="editionLabel">安芸太田新聞・特別号</span><br>
+      毎日リアルタイム自動更新中<br>
       発行：安芸太田新聞編集局（広島県山県郡安芸太田町）
     </div>
     <div class="masthead-right">
       <h1 class="title-jp">安芸太田<span class="accent">新聞</span></h1>
-      <div class="subline">AKIOTA SHIMBUN — 中国山地から、きょうのニュースを。</div>
+      <div class="subline">AKIOTA SHIMBUN — 中国山地から、最新のニュースを。</div>
     </div>
   </div>
 
   <div class="policy-strip">
-    <span>本紙は<strong>その日・前日に確認できた事実</strong>を日付を明記して掲載します。速報性が低い話題は「◯月◯日時点」を必ず併記します。</span>
-    <span><b>編集方針</b>｜出典明記・辛口論評・毎朝更新</span>
+    <span>本紙は<strong>検索した瞬間の生の事実</strong>を抽出して掲載します。ボタンを押すたびに、GeminiがGoogle検索を用いて新しい紙面を生成します。</span>
+    <span><b>編集方針</b>｜リアルタイム取材・辛口論評・瞬時生成</span>
   </div>
 
   <div class="status-bar" id="statusBar">
-    <span><span class="dot"></span><span id="statusText">読み込み中…</span></span>
-    <button id="regenBtn">最新版を取得し直す</button>
+    <span><span class="dot"></span><span id="statusText">ニューススタンドを準備中…</span></span>
+    <button id="regenBtn">新しい記事に書き換える</button>
   </div>
 
   <div id="content">
-    </div>
+    <!-- 初回描画エリア -->
+  </div>
 
   <div class="footer-strip">
     <span>安芸太田新聞編集局｜広島県山県郡安芸太田町</span>
     <span>本紙の記事は取材・公表時点の情報に基づきます。最新情報は各公式発表をご確認ください。</span>
-    <span id="footerDate">2026年7月14日発行</span>
+    <span id="footerDate">リアルタイム最新号</span>
   </div>
 
 </div>
@@ -163,40 +164,45 @@ const IMG = {
   watch: "https://picsum.photos/seed/akiota-courthouse/700/450"
 };
 
-function jstNow(){
+// 今日の日付をJSTで取得するシンプルな関数
+function jstTodayStr(){
   const now = new Date();
   const utc = now.getTime() + now.getTimezoneOffset()*60000;
-  return new Date(utc + 9*3600000);
+  const jst = new Date(utc + 9*3600000);
+  const y = jst.getFullYear();
+  const m = String(jst.getMonth()+1).padStart(2,'0');
+  const d = String(jst.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
 }
-...
-// 7/14 分の手動編集版（初期表示・フォールバック用）
+
+function fmtJP(dateStr){
+  const [y,m,d]=dateStr.split('-').map(Number);
+  const wd=['日','月','火','水','木','金','土'][new Date(y,m-1,d).getDay()];
+  return `${y}年（令和${y-2018}年）${m}月${d}日（${wd}）特別号`;
+}
+
+// 保険用の手動編集フォールバックデータ
 const SEED_EDITION = {
   date: "2026-07-14",
   top: {
-    eyebrow: "きょうのトップ",
+    eyebrow: "災害級の猛暑",
     headlineHtml: "安芸太田・加計で<span class='under'>37.1度</span><br>県内、今年最高の暑さ",
     deck: "熱中症警戒アラート、県内で4日連続発表 搬送者は13日だけで20人",
     body: [
       "豪雪地帯として知られる安芸太田町が、一転して県内トップクラスの暑さに見舞われている。テレビ新広島の報道（13日）によると、同日の観測で安芸太田町加計は37.1℃を記録し、県内4地点で「猛暑日」となった中でも今年一番の暑さとなった。",
-      "広島県内では13日、各地で今年の最高気温を更新する記録的な暑さとなり、熱中症により20人が搬送された（テレビ新広島、13日報道）。県内では14日で4日連続となる熱中症警戒アラートが発表されており、屋外での作業や散策には引き続き注意が必要だ。",
-      "中国新聞デジタルが13日11時発表分として伝えた気象情報では、広島市の14日の天気は「晴れ時々曇り」で最高33℃・最低27℃、紫外線指数は「非常に強い」の見込み。中国山地に位置する安芸太田町は市街地より涼しいとはいえ、日中の直射日光下では体感温度がさらに上がるとみられ、地域の見守り体制の重要性が改めて浮き彫りになっている。",
-      "三段峡では例年、渓谷内の木陰や水辺で涼をとる来訪者も多いが、峡内は照明設備がなく、散策目安時間は7時30分〜17時。役場産業観光課は例年通り、熱中症対策として小まめな水分補給と休憩を呼びかけている。"
+      "広島県内では13日、各地で今年の最高気温を更新する記録的な暑さとなり、熱中症により20人が搬送された（テレビ新広島、13日報道）。県内では14日で4日連続となる熱中症警戒アラートが発表されており、屋外での作業や散策には引き続き注意が必要だ。"
     ],
     sourceNote: "情報源：テレビ新広島（7月13日配信）／中国新聞デジタル天気情報（7月13日11時発表）",
     photoCap: "照りつける夏空。中国山地にも記録的な暑さ＝資料写真（イメージ）",
     flash: [
       ["安芸太田町加計 37.1℃（今年最高）","7/13"],
-      ["熱中症警戒アラート 4日連続発表","〜7/14"],
-      ["県内熱中症搬送 20人","7/13"],
-      ["広島市14日予報 33℃／27℃・晴れ時々曇り","発表7/13"]
+      ["熱中症警戒アラート 4日連続発表","〜7/14"]
     ]
   },
   column: {
     title: "「涼み処、あるのか、ないのか」──言葉だけの警戒アラートに物申す",
     body: [
-      "はっきり言う。「熱中症警戒アラートを4日連続発表」というのは、行政として当然の情報発信であって、褒められる仕事ではない。問題は、その先だ。安芸太田町のどの集落に、誰でも歩いて涼める場所があるのか。それを住民が具体的に思い浮かべられるかどうかが本当の指標であって、アラートを出した回数を誇る話ではない。",
-      "私はAIので現地を歩いたことはないが、公開情報を漁った限り、「涼み処マップ」のような具体的な周知は見当たらなかった。三段峡は照明もなく17時には引き上げる必要がある観光地であり、涼を求める場所としては旅行者向けであって、独居の高齢者が真夏の昼に頼れる場所ではない。もし町の公民館や道の駅がクーリングシェルターとして開放されているなら、それを堂々と、毎日のように広報すべきだ。していないなら、していないと認めて、来年の夏までに作ればいい。どちらなのか、外から見ていて分からない状態こそが一番まずい。",
-      "人口が減れば減るほど、「誰かが誰かを気にかける」仕組みは自然発生しなくなる。隣に住んでいた人が引っ越し、空き家が増えれば、異変に気づく目そのものが町から減っていく。それを補うのが行政の役目のはずだ。過去のニュースをかき集めて記事を書くAIごときが言うのもおこがましいが、「今年は史上最高の暑さでした」で終わらせず、来週も再来週も、この町が涼み処をどう可視化するのか、私はしつこく追い続けるつもりだ。"
+      "はっきり言う。「熱中症警戒アラートを4日連続発表」というのは、行政として当然の情報発信であって、褒められる仕事ではない。問題は、その先だ。安芸太田町のどの集落に、誰でも歩いて涼める場所があるのか。公民館や道の駅がクーリングシェルターとして開放されているなら、それを堂々と、毎日のように広報すべきだ。"
     ]
   },
   hazuki: {
@@ -204,27 +210,21 @@ const SEED_EDITION = {
     lead: "元広島東洋カープ・羽月隆太郎被告（26）をめぐる指定薬物事件は、判決後もライブ配信での“暴露”が続き、県内で関心を集めている。事実関係を時系列でまとめた。",
     timeline: [
       ["2026年1月","指定薬物「エトミデート」（通称ゾンビたばこ）使用の疑いで逮捕。医薬品医療機器法違反容疑。"],
-      ["2月","起訴。広島球団は契約を解除。"],
-      ["6月15日","初公判で起訴内容を認め即日結審。拘禁刑1年・執行猶予3年の判決。中国新聞（6月16日付）によれば、被告人質問で昨年4月ごろ東京遠征中に知人を通じて初めて使用したと説明したという。"],
-      ["5月下旬〜","宮崎県内の祖父母宅を拠点に、TikTokでのライブ配信を開始。"],
-      ["5月29日ごろの配信","「6人の選手が同じ人物から購入」などと、他選手の関与をうかがわせる趣旨の発言（本人の配信内での発言として報じられたもの）。"],
-      ["6月下旬の配信","投資トラブルで「お金を預けて返金されない」と訴えたとされる（週刊女性PRIME経由の報道）。"]
+      ["6月15日","初公判で起訴内容を認め即日結審。拘禁刑1年・執行猶予3年の判決。"]
     ],
-    note: "※上記「他選手の関与」は羽月被告本人のライブ配信での発言として週刊誌・スポーツ紙が報じた内容であり、対象とされた選手が特定の容疑で立件された事実は確認されていない。球団は羽月被告の発言を受け「調査継続」としているが、本紙が確認できた範囲では続報は出ていない。断定的な事実として扱わず、続報があり次第更新する。",
-    sourceNote: "情報源：Yahoo!ニュース配信の週刊女性PRIME・デイリー新潮記事、中国新聞（6月16日付）ほか"
+    note: "※球団は羽月被告の発言を受け「調査継続」としているが、本紙が確認できた範囲では続報は出ていない。続報があり次第更新する。",
+    sourceNote: "情報源：Yahoo!ニュース、中国新聞ほか"
   },
   briefs: [
-    ["カープ、セ・リーグ5位で夏場へ","7月上旬時点で31勝43敗4分・勝率.419のセ・リーグ5位（NPB公式サイト集計）。プロ野球は7月28・29日に東京ドーム・富山市民球場でオールスターゲームを開催予定。","※速報性の低い集計記事"],
-    ["サンフレッチェ、浅野拓磨が10年ぶり復帰","マジョルカ（スペイン）所属だったFW浅野拓磨の復帰と、元コートジボワール代表FWアレーの加入が6月下旬に発表。テレビ新広島の報道（7月10日）によれば、チームは欧州で強化合宿中。","発表6月下旬／合宿報道7/10"],
-    ["大谷翔平、MLBオールスター本戦を欠場へ","7月5日にナ・リーグ指名打者部門の先発に選出されたが、左膝の違和感により7月11日に本戦欠場が発表された。本戦は日本時間15日実施予定。","選出7/5／欠場発表7/11"]
+    ["カープ、セ・リーグ5位で夏場へ","7月上旬時点で31勝43敗4分・勝率.419のセ・リーグ5位（NPB公式サイト集計）。","※速報性の低い集計記事"]
   ],
   weather: { summary:"晴れ時々曇り", high:"33℃前後", low:"27℃前後", uv:"非常に強い",
-    note:"中国新聞デジタルの広島市予報（7月13日11時発表分）を基にした参考値です。中国山地の山間部は市街地より気温がやや低くなる傾向がありますが油断は禁物です。三段峡散策は7:30〜17:00を目安に、こまめな水分補給を。" }
+    note:"中国新聞デジタルの広島市予報（7月13日11時発表分）を基にした参考値です。" }
 };
 
 function render(data){
   document.getElementById('editionLabel').textContent = fmtJP(data.date) + "";
-  document.getElementById('footerDate').textContent = fmtJP(data.date).split('（')[0] + "発行";
+  document.getElementById('footerDate').textContent = fmtJP(data.date).split('（')[0] + "特別号";
 
   const t = data.top, c = data.column, h = data.hazuki;
   const flashHtml = t.flash.map(([txt,dt])=>`<li>${txt}<span class="dt">${dt}</span></li>`).join('');
@@ -252,10 +252,10 @@ function render(data){
     </div>
 
     <div class="column-section">
-      <div class="column-header"><span class="name">けさの直言</span><span class="byline">AI論説委員コーナー・毎朝掲載</span></div>
+      <div class="column-header"><span class="name">けさの直言</span><span class="byline">AI論説委員コーナー・リアルタイム掲載</span></div>
       <div class="column-body">
         <div><h3>${c.title}</h3>${colHtml}</div>
-        <div class="column-tagbox"><b>このコラムについて</b>AIが一住民の視点で、その日の地域ニュースに率直な意見を添えるコーナーです。事実部分と意見部分を明確に分け、行政や仕組みへの疑問を遠慮なく書きます。個人攻撃はしません。</div>
+        <div class="column-tagbox"><b>このコラムについて</b>AIが一住民の視点で、その日の地域ニュースに率直な意見を添えるコーナーです。事実部分と意見部分を明確に分け、行政や仕組みへの疑問を遠慮なく書きます。</div>
       </div>
       <div class="column-sign">― AI論説委員／本紙独自見解（事実部分と筆者の意見部分を明確に区別しています）</div>
     </div>
@@ -277,7 +277,7 @@ function render(data){
     <div class="bottom-grid">
       <div class="briefs"><h3>県内スポーツ短信（日付明記）</h3>${briefsHtml}</div>
       <div class="weather-box">
-        <h3>あすの天気（安芸太田町周辺）</h3>
+        <h3>きょう・あすの天気（安芸太田町周辺）</h3>
         <div class="weather-row"><span>天気</span><span class="val">${data.weather.summary}</span></div>
         <div class="weather-row"><span>最高気温</span><span class="val" style="color:var(--red)">${data.weather.high}</span></div>
         <div class="weather-row"><span>最低気温</span><span class="val" style="color:#3a6073">${data.weather.low}</span></div>
@@ -286,7 +286,7 @@ function render(data){
       </div>
       <div class="notice-box">
         <h3>編集局からのお知らせ</h3>
-        <p><span class="badge">日刊</span>本紙は毎日 6:00 を境に版を更新します。最初にページを開いた方のブラウザがきっかけとなり、その日の版を自動生成します。</p>
+        <p><span class="badge">速報</span>このページを開くか、更新ボタンを押すたびにGeminiがGoogle検索で安芸太田町の今を調べ直し、毎回違う特集記事を作ります。</p>
         <p><span class="badge">画像</span>写真は実在の事件・人物を写したものではなく、安定表示のための資料写真です。</p>
         <p><span class="badge">出典</span>掲載情報はNPB公式・中国新聞デジタル・テレビ新広島・Yahoo!ニュース配信記事など公開情報を要約したものです。</p>
       </div>
@@ -294,26 +294,14 @@ function render(data){
   `;
 }
 
-function editionDateFor(d){
-  const dd = new Date(d);
-  if(dd.getHours() < 6){ dd.setDate(dd.getDate()-1); }
-  const y=dd.getFullYear(), m=String(dd.getMonth()+1).padStart(2,'0'), day=String(dd.getDate()).padStart(2,'0');
-  return `${y}-${m}-${day}`;
-}
-function fmtJP(dateStr){
-  const [y,m,d]=dateStr.split('-').map(Number);
-  const wd=['日','月','火','水','木','金','土'][new Date(y,m-1,d).getDay()];
-  return `${y}年（令和${y-2018}年）${m}月${d}日（${wd}）朝刊`;
-}
-
-async function callClaudeForEdition(dateStr){
+async function callClaudeForEdition(dateStr, theme){
   const sys = `あなたは「安芸太田新聞」というローカル新聞の編集AIです。広島県安芸太田町を中心とした地域紙の${dateStr}朝刊を作成してください。
 【絶対厳守】
 - Google検索で実際に確認できた事実だけを書く。分からないことは書かない、断定しない。
-- すべての事実に日付を明記する（例：「7月13日、〜と報じられた」）。数日前の話を今日のニュースのように書かない。
+- すべての事実に日付を明記する。数日前の話を今日のニュースのように書かない。
 - スポーツ（カープ・サンフレッチェ・大谷翔平など）は必ず発表日・報道日を併記した「短信」として扱う。
-- 「けさの直言」コラムは安芸太田町政・地域課題について、AI論説委員として率直かつ辛口に、しかし個人攻撃や誹謗中傷にならない範囲で書く。ユーザーは厳しい論調を好むので遠慮しない。ただし特定個人への人格攻撃・差別的表現・確認できない誹謗は禁止。
-- 元カープ選手の指定薬物事件（羽月隆太郎氏関連）について新しい報道があれば「クローズアップ・ウォッチ」として時系列でまとめる。他選手への言及は「本人の発言として報じられた」等、伝聞であることを明確にする。新しい進展がなければ「続報なし」と書く。
+- 「けさの直言」コラムは安芸太田町政・地域課題について、AI論説委員として率直かつ辛口に、しかし個人攻撃や誹謗中傷にならない範囲で書く。
+- 元カープ選手の指定薬物事件（羽月隆太郎氏関連）について新しい報道があれば「クローズアップ・ウォッチ」として時系列でまとめる。進展がなければ「続報なし」と書く。
 - 出力は必ず次のJSON形式のみ。前置き・説明・コードブロック記号は一切付けない。
 {
  "date":"${dateStr}",
@@ -329,7 +317,7 @@ async function callClaudeForEdition(dateStr){
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
           contents: [{
-              parts: [{ text: `${dateStr}の朝刊を、指定のJSON形式で1つだけ生成してください。` }]
+              parts: [{ text: `今日の朝刊を作成してください。今回のトップ記事と論説コラムは、特に【${theme}】に焦点を当てて、Google検索を使って取材し、前後の記事と被らないように完全なJSONで執筆してください。` }]
           }],
           systemInstruction: {
               parts: [{ text: sys }]
@@ -338,7 +326,6 @@ async function callClaudeForEdition(dateStr){
       })
   });
 
-  // エラーハンドリングの強化：404などのエラー時に詳細を拾う
   if (!res.ok) {
       let detail = "";
       try {
@@ -353,7 +340,7 @@ async function callClaudeForEdition(dateStr){
   const data = await res.json();
   
   if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
-      throw new Error("Google APIから正しく記事データが返されませんでした。データ構造が不正です: " + JSON.stringify(data));
+      throw new Error("Google APIから正しく記事データが返されませんでした。");
   }
 
   const textBlock = data.candidates[0].content.parts[0].text || "";
@@ -362,58 +349,46 @@ async function callClaudeForEdition(dateStr){
   const jsonEnd = cleaned.lastIndexOf('}');
   
   if (jsonStart === -1 || jsonEnd === -1) {
-      throw new Error("AIの文章から新聞用データ(JSON)を切り出せませんでした。文章内容: " + textBlock);
+      throw new Error("AIの文章から新聞用データ(JSON)を切り出せませんでした。");
   }
 
   return JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
 }
 
-async function boot(force){
+// ページを開いた時も、ボタンを押した時も、毎回異なる「テーマ」をランダムに選んでリアルタイム生成！
+async function boot(){
   const statusBar = document.getElementById('statusBar');
   const statusText = document.getElementById('statusText');
-  const editionDate = editionDateFor(jstNow());
-  const key = `edition:${editionDate}`;
+  const todayStr = jstTodayStr();
+
+  // ボタンを押すたびに異なるテーマを自動選定
+  const themes = [
+    "安芸太田町の自然と観光（三段峡や恐羅漢山、温井ダムなど）の現在の様子や最新状況",
+    "安芸太田町に受け継がれる神楽文化や地元の伝統行事・イベント情報",
+    "安芸太田町のローカルグルメ（温井ダムカレー、祇園坊柿、特産品）やお店の話題",
+    "安芸太田町の町政・人口減少・移住促進といった地域課題とAI論説委員による鋭い論評",
+    "安芸太田町周辺のきょう起きた最新ローカルニュースやお天気情報、防災対策の現状"
+  ];
+  const selectedTheme = themes[Math.floor(Math.random() * themes.length)];
 
   statusBar.classList.add('loading');
+  statusText.textContent = `【${selectedTheme.split('（')[0].split('や')[0]}】をテーマにリアルタイム取材中…`;
 
   try{
-    if(!force){
-      try{
-        const cached = await window.storage.get(key, true);
-        if(cached && cached.value){
-          const data = JSON.parse(cached.value);
-          render(data);
-          statusText.textContent = `${editionDate} 版を表示中（キャッシュ済み）`;
-          statusBar.classList.remove('loading');
-          return;
-        }
-      }catch(e){ }
-    }
-
-    if(editionDate === SEED_EDITION.date && !force){
-      render(SEED_EDITION);
-      try{ await window.storage.set(key, JSON.stringify(SEED_EDITION), true); }catch(e){}
-      statusText.textContent = `${editionDate} 版を表示中`;
-      statusBar.classList.remove('loading');
-      return;
-    }
-
-    statusText.textContent = `${editionDate} 版を生成中…（web検索しながら記事を書いています）`;
-    const fresh = await callClaudeForEdition(editionDate);
+    const fresh = await callClaudeForEdition(todayStr, selectedTheme);
     render(fresh);
-    try{ await window.storage.set(key, JSON.stringify(fresh), true); }catch(e){}
-    statusText.textContent = `${editionDate} 版を表示中（自動生成）`;
+    statusText.textContent = `最新号を表示中（テーマ：${selectedTheme.split('（')[0]}）`;
   }catch(err){
     console.error(err);
-    render(SEED_EDITION);
-    // エラーメッセージを画面のステータス欄に赤字でダイレクトに表示させる
+    render(SEED_EDITION); // 失敗時のみ、保険用の固定新聞を表示
     statusText.innerHTML = `<span style="color:#d9534f; font-weight:bold;">生成失敗: ${err.message}</span>`;
   }
   statusBar.classList.remove('loading');
 }
 
-document.getElementById('regenBtn').addEventListener('click', ()=>boot(true));
-boot(false);
+// ボタンクリック＆初回読み込みのどちらも最新記事をランダムテーマで生成！
+document.getElementById('regenBtn').addEventListener('click', ()=>boot());
+boot();
 </script>
 </body>
 </html>
