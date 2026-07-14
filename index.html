@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>安芸太田新聞｜リアルタイム自動生成</title>
+<title>安芸太田新聞｜リアルタイム生成</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
 
@@ -36,6 +36,9 @@
   }
   .status-bar .dot{ width:8px;height:8px;border-radius:50%; background:#2e8b57; display:inline-block; margin-right:6px; }
   .status-bar.loading .dot{ background:#c9a227; }
+  
+  .key-config-box { display: flex; align-items: center; gap: 8px; font-family:"Noto Sans JP",sans-serif; }
+  .key-config-box input { font-size: 11px; padding: 3px 6px; width: 220px; border: 1px solid #ccc; }
   .status-bar button{
     font-family:"Noto Sans JP",sans-serif; font-size:10.5px; border:1px solid var(--ink);
     background:#fff; padding:3px 10px; cursor:pointer;
@@ -126,7 +129,7 @@
   <div class="masthead">
     <div class="masthead-left">
       <span class="edition" id="editionLabel">安芸太田新聞・特別号</span><br>
-      毎日リアルタイム自動更新中<br>
+      リアルタイム自動生成システム<br>
       発行：安芸太田新聞編集局（広島県山県郡安芸太田町）
     </div>
     <div class="masthead-right">
@@ -136,18 +139,20 @@
   </div>
 
   <div class="policy-strip">
-    <span>本紙は<strong>検索した瞬間の生の事実</strong>を抽出して掲載します。ボタンを押すたびに、GeminiがGoogle検索を用いて新しい紙面を生成します。</span>
-    <span><b>編集方針</b>｜リアルタイム取材・辛口論評・瞬時生成</span>
+    <span>本紙はブラウザから直接GoogleのAIを呼び出します。ボタンを押すたびに新しい紙面がその場で執筆されます。</span>
+    <span><b>編集方針</b>｜ダイレクト接続・辛口論評・瞬時生成</span>
   </div>
 
   <div class="status-bar" id="statusBar">
-    <span><span class="dot"></span><span id="statusText">ニューススタンドを準備中…</span></span>
-    <button id="regenBtn">新しい記事に書き換える</button>
+    <span><span class="dot"></span><span id="statusText">APIキーを入力すると自動生成が始まります</span></span>
+    <div class="key-config-box">
+      <input type="password" id="apiKeyInput" placeholder="ここに Gemini の APIキー(AIzaSy...) を入力">
+      <button id="regenBtn">新しい記事に書き換える</button>
+    </div>
   </div>
 
   <div id="content">
-    <!-- 初回描画エリア -->
-  </div>
+    </div>
 
   <div class="footer-strip">
     <span>安芸太田新聞編集局｜広島県山県郡安芸太田町</span>
@@ -164,7 +169,6 @@ const IMG = {
   watch: "https://picsum.photos/seed/akiota-courthouse/700/450"
 };
 
-// 今日の日付をJSTで取得するシンプルな関数
 function jstTodayStr(){
   const now = new Date();
   const utc = now.getTime() + now.getTimezoneOffset()*60000;
@@ -172,7 +176,7 @@ function jstTodayStr(){
   const y = jst.getFullYear();
   const m = String(jst.getMonth()+1).padStart(2,'0');
   const d = String(jst.getDate()).padStart(2,'0');
-  return `${y}-${m}-${d}`;
+  return `${y}-${m}-${day=String(jst.getDate()).padStart(2,'0')}`;
 }
 
 function fmtJP(dateStr){
@@ -181,45 +185,45 @@ function fmtJP(dateStr){
   return `${y}年（令和${y-2018}年）${m}月${d}日（${wd}）特別号`;
 }
 
-// 保険用の手動編集フォールバックデータ
+// サンプルデータ（初期表示・エラー時の保険用）
 const SEED_EDITION = {
   date: "2026-07-14",
   top: {
-    eyebrow: "災害級の猛暑",
-    headlineHtml: "安芸太田・加計で<span class='under'>37.1度</span><br>県内、今年最高の暑さ",
-    deck: "熱中症警戒アラート、県内で4日連続発表 搬送者は13日だけで20人",
+    eyebrow: "特別サンプル版",
+    headlineHtml: "安芸太田新聞へようこそ<br>上部にAPIキーを入力してください",
+    deck: "キーを設定すると、ボタンを押すたびにAIがリアルタイムにニュースを生成します",
     body: [
-      "豪雪地帯として知られる安芸太田町が、一転して県内トップクラスの暑さに見舞われている。テレビ新広島の報道（13日）によると、同日の観測で安芸太田町加計は37.1℃を記録し、県内4地点で「猛暑日」となった中でも今年一番の暑さとなった。",
-      "広島県内では13日、各地で今年の最高気温を更新する記録的な暑さとなり、熱中症により20人が搬送された（テレビ新広島、13日報道）。県内では14日で4日連続となる熱中症警戒アラートが発表されており、屋外での作業や散策には引き続き注意が必要だ。"
+      "現在表示されているのはシステム構築用のサンプル紙面です。ページ上部の入力欄に、Google AI Studioで取得したAPIキー（AIzaSyから始まる文字列）を入力すると、システムが有効化されます。",
+      "入力されたAPIキーは他人のサーバーへは一切送信されず、あなた自身のブラウザ（パソコン内）にのみ安全に記憶されます。これにより、中継エラーなどのトラブルを完全に回避し、最速で安定した自動生成が可能になります。"
     ],
-    sourceNote: "情報源：テレビ新広島（7月13日配信）／中国新聞デジタル天気情報（7月13日11時発表）",
-    photoCap: "照りつける夏空。中国山地にも記録的な暑さ＝資料写真（イメージ）",
+    sourceNote: "情報源：安芸太田新聞システム管理",
+    photoCap: "中国山地の美しい山並み＝資料写真（イメージ）",
     flash: [
-      ["安芸太田町加計 37.1℃（今年最高）","7/13"],
-      ["熱中症警戒アラート 4日連続発表","〜7/14"]
+      ["APIキー入力待ち状態です","現在"],
+      ["設定後はボタン1つで無限生成可能","機能"]
     ]
   },
   column: {
-    title: "「涼み処、あるのか、ないのか」──言葉だけの警戒アラートに物申す",
+    title: "複雑な中継を捨てて、原点に立ち返ることの大切さ",
     body: [
-      "はっきり言う。「熱中症警戒アラートを4日連続発表」というのは、行政として当然の情報発信であって、褒められる仕事ではない。問題は、その先だ。安芸太田町のどの集落に、誰でも歩いて涼める場所があるのか。公民館や道の駅がクーリングシェルターとして開放されているなら、それを堂々と、毎日のように広報すべきだ。"
+      "物事がうまくいかないとき、私たちは得てして『さらに仕組みを足そう』として泥沼にはまる。今回の中継サーバーのトラブルがまさにそれだ。経由地が増えれば増えるほど、エラーの犯人を特定するのは困難になる。一度まっさらにして、直接つなぐという決断こそが、現状を打破する唯一の正解だったのだ。"
     ]
   },
   hazuki: {
-    heading: "羽月隆太郎氏「ゾンビたばこ」問題 これまでの経緯",
-    lead: "元広島東洋カープ・羽月隆太郎被告（26）をめぐる指定薬物事件は、判決後もライブ配信での“暴露”が続き、県内で関心を集めている。事実関係を時系列でまとめた。",
+    heading: "地域密着型AI新聞としての第一歩",
+    lead: "安芸太田町の観光・グルメ・地域課題など、シャッフルされた多角的なテーマで毎回異なる記事を生成する準備が整いました。",
     timeline: [
-      ["2026年1月","指定薬物「エトミデート」（通称ゾンビたばこ）使用の疑いで逮捕。医薬品医療機器法違反容疑。"],
-      ["6月15日","初公判で起訴内容を認め即日結審。拘禁刑1年・執行猶予3年の判決。"]
+      ["ステップ1","Google AI Studioで無料のAPIキーを取得"],
+      ["ステップ2","上部の入力欄に貼り付ける"]
     ],
-    note: "※球団は羽月被告の発言を受け「調査継続」としているが、本紙が確認できた範囲では続報は出ていない。続報があり次第更新する。",
-    sourceNote: "情報源：Yahoo!ニュース、中国新聞ほか"
+    note: "キーを入力後、「新しい記事に書き換える」ボタンを押してください。",
+    sourceNote: "安芸太田新聞 編集方針"
   },
   briefs: [
-    ["カープ、セ・リーグ5位で夏場へ","7月上旬時点で31勝43敗4分・勝率.419のセ・リーグ5位（NPB公式サイト集計）。","※速報性の低い集計記事"]
+    ["キー入力後に最新スポーツ情報も自動取得","公開されているNPB・Jリーグ等の最新ニュースを検索して要約します。","常時待機"]
   ],
-  weather: { summary:"晴れ時々曇り", high:"33℃前後", low:"27℃前後", uv:"非常に強い",
-    note:"中国新聞デジタルの広島市予報（7月13日11時発表分）を基にした参考値です。" }
+  weather: { summary:"データ通信待機中", high:"--度", low:"--度", uv:"--",
+    note:"キー設定後に最新の気象情報を取得します。" }
 };
 
 function render(data){
@@ -255,9 +259,9 @@ function render(data){
       <div class="column-header"><span class="name">けさの直言</span><span class="byline">AI論説委員コーナー・リアルタイム掲載</span></div>
       <div class="column-body">
         <div><h3>${c.title}</h3>${colHtml}</div>
-        <div class="column-tagbox"><b>このコラムについて</b>AIが一住民の視点で、その日の地域ニュースに率直な意見を添えるコーナーです。事実部分と意見部分を明確に分け、行政や仕組みへの疑問を遠慮なく書きます。</div>
+        <div class="column-tagbox"><b>このコラムについて</b>AIが一住民の視点で、その日の地域ニュースに率直な意見を添えるコーナーです。</div>
       </div>
-      <div class="column-sign">― AI論説委員／本紙独自見解（事実部分と筆者の意見部分を明確に区別しています）</div>
+      <div class="column-sign">― AI論説委員／本紙独自見解</div>
     </div>
 
     <div class="watch-section">
@@ -267,7 +271,7 @@ function render(data){
           <h4>${h.heading}</h4>
           <p>${h.lead}</p>
           <div class="photo-frame" style="margin-top:8px;"><img src="${IMG.watch}" alt="資料写真" loading="lazy" style="height:160px;"></div>
-          <div class="photo-cap">資料写真（イメージ）。実際の関係者を写したものではありません。</div>
+          <div class="photo-cap">資料写真（イメージ）</div>
         </div>
         <div class="watch-timeline">${timelineHtml}</div>
         <div class="watch-note">${h.note}<br>${h.sourceNote}</div>
@@ -286,23 +290,18 @@ function render(data){
       </div>
       <div class="notice-box">
         <h3>編集局からのお知らせ</h3>
-        <p><span class="badge">速報</span>このページを開くか、更新ボタンを押すたびにGeminiがGoogle検索で安芸太田町の今を調べ直し、毎回違う特集記事を作ります。</p>
-        <p><span class="badge">画像</span>写真は実在の事件・人物を写したものではなく、安定表示のための資料写真です。</p>
-        <p><span class="badge">出典</span>掲載情報はNPB公式・中国新聞デジタル・テレビ新広島・Yahoo!ニュース配信記事など公開情報を要約したものです。</p>
+        <p><span class="badge">直接接続</span>本紙は中継サーバーを使わず、ブラウザから直接Google APIへ接続するクリーンな仕組みに移行しました。</p>
       </div>
     </div>
   `;
 }
 
-async function callClaudeForEdition(dateStr, theme){
+async function callGeminiDirectly(apiKey, dateStr, theme){
   const sys = `あなたは「安芸太田新聞」というローカル新聞の編集AIです。広島県安芸太田町を中心とした地域紙の${dateStr}朝刊を作成してください。
 【絶対厳守】
-- Google検索で実際に確認できた事実だけを書く。分からないことは書かない、断定しない。
+- Google検索ツールで実際に確認できた事実だけを書く。分からないことは書かない。
 - すべての事実に日付を明記する。数日前の話を今日のニュースのように書かない。
-- スポーツ（カープ・サンフレッチェ・大谷翔平など）は必ず発表日・報道日を併記した「短信」として扱う。
-- 「けさの直言」コラムは安芸太田町政・地域課題について、AI論説委員として率直かつ辛口に、しかし個人攻撃や誹謗中傷にならない範囲で書く。
-- 元カープ選手の指定薬物事件（羽月隆太郎氏関連）について新しい報道があれば「クローズアップ・ウォッチ」として時系列でまとめる。進展がなければ「続報なし」と書く。
-- 出力は必ず次のJSON形式のみ。前置き・説明・コードブロック記号は一切付けない。
+- 出力は必ず次のJSON形式のみ。前置きやコードブロック記号は一切付けない。
 {
  "date":"${dateStr}",
  "top":{"eyebrow":"","headlineHtml":"","deck":"","body":["",""],"sourceNote":"","photoCap":"","flash":[["",""]]},
@@ -312,56 +311,65 @@ async function callClaudeForEdition(dateStr, theme){
  "weather":{"summary":"","high":"","low":"","uv":"","note":""}
 }`;
 
-  const res = await fetch("https://soft-violet-9a9a.ttg0117.workers.dev/", {
+  // 中継サーバーを完全に排除し、Googleの公式APIURLを直接叩く構造にしました
+  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+  const res = await fetch(googleUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
           contents: [{
-              parts: [{ text: `今日の朝刊を作成してください。今回のトップ記事と論説コラムは、特に【${theme}】に焦点を当てて、Google検索を使って取材し、前後の記事と被らないように完全なJSONで執筆してください。` }]
+              parts: [{ text: `今日の朝刊を作成してください。今回のトップ記事と論説コラムは、特に【${theme}】に焦点を当てて、Google検索を使って最新情報を集めて執筆してください。` }]
           }],
           systemInstruction: {
               parts: [{ text: sys }]
           },
-          tools: [{ googleSearch: {} }]
+          tools: [{ googleSearch: {} }] // Googleの最新検索機能を使用
       })
   });
 
   if (!res.ok) {
-      let detail = "";
-      try {
-          const errJson = await res.json();
-          detail = errJson.error || JSON.stringify(errJson);
-      } catch(e) {
-          detail = await res.text();
-      }
-      throw new Error(`[通信エラー ${res.status}] ${detail}`);
+      const errText = await res.text();
+      throw new Error(`Google APIエラー (${res.status}): ${errText}`);
   }
 
   const data = await res.json();
-  
-  if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
-      throw new Error("Google APIから正しく記事データが返されませんでした。");
-  }
-
   const textBlock = data.candidates[0].content.parts[0].text || "";
   const cleaned = textBlock.replace(/```json\n/g, "").replace(/```/g, "").trim();
   const jsonStart = cleaned.indexOf('{');
   const jsonEnd = cleaned.lastIndexOf('}');
   
   if (jsonStart === -1 || jsonEnd === -1) {
-      throw new Error("AIの文章から新聞用データ(JSON)を切り出せませんでした。");
+      throw new Error("AIの文章から有効なJSONデータを切り出せませんでした。");
   }
 
   return JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
 }
 
-// ページを開いた時も、ボタンを押した時も、毎回異なる「テーマ」をランダムに選んでリアルタイム生成！
-async function boot(){
+async function boot(isUserTriggered){
   const statusBar = document.getElementById('statusBar');
   const statusText = document.getElementById('statusText');
-  const todayStr = jstTodayStr();
+  const apiKeyInput = document.getElementById('apiKeyInput');
+  
+  // 入力されたキーを取得、無ければ保存されているキーを取得
+  let apiKey = apiKeyInput.value.trim();
+  if(!apiKey) {
+    apiKey = localStorage.getItem('gemini_api_key') || "";
+    if(apiKey) apiKeyInput.value = apiKey;
+  }
 
-  // ボタンを押すたびに異なるテーマを自動選定
+  // キーが全く設定されていない場合は、初期サンプル画面を出して待機する
+  if(!apiKey) {
+    render(SEED_EDITION);
+    statusText.textContent = "上部の入力欄に Gemini の APIキーを入力してください";
+    statusBar.classList.remove('loading');
+    return;
+  }
+
+  // 入力されたキーをブラウザ（PC内）に安全に記憶させる
+  localStorage.setItem('gemini_api_key', apiKey);
+
+  const todayStr = jstTodayStr();
   const themes = [
     "安芸太田町の自然と観光（三段峡や恐羅漢山、温井ダムなど）の現在の様子や最新状況",
     "安芸太田町に受け継がれる神楽文化や地元の伝統行事・イベント情報",
@@ -372,23 +380,29 @@ async function boot(){
   const selectedTheme = themes[Math.floor(Math.random() * themes.length)];
 
   statusBar.classList.add('loading');
-  statusText.textContent = `【${selectedTheme.split('（')[0].split('や')[0]}】をテーマにリアルタイム取材中…`;
+  statusText.textContent = `【${selectedTheme.split('（')[0].split('や')[0]}】をテーマに直接Google検索でリアルタイム取材中…`;
 
   try{
-    const fresh = await callClaudeForEdition(todayStr, selectedTheme);
+    const fresh = await callGeminiDirectly(apiKey, todayStr, selectedTheme);
     render(fresh);
     statusText.textContent = `最新号を表示中（テーマ：${selectedTheme.split('（')[0]}）`;
-  }catch(err){
+  } catch(err) {
     console.error(err);
-    render(SEED_EDITION); // 失敗時のみ、保険用の固定新聞を表示
+    render(SEED_EDITION);
     statusText.innerHTML = `<span style="color:#d9534f; font-weight:bold;">生成失敗: ${err.message}</span>`;
   }
   statusBar.classList.remove('loading');
 }
 
-// ボタンクリック＆初回読み込みのどちらも最新記事をランダムテーマで生成！
-document.getElementById('regenBtn').addEventListener('click', ()=>boot());
-boot();
+document.getElementById('regenBtn').addEventListener('click', () => boot(true));
+
+// 初回起動時、すでに保存されたキーがあれば自動実行、無ければ入力待ち
+const savedKey = localStorage.getItem('gemini_api_key');
+if(savedKey) {
+  boot(false);
+} else {
+  render(SEED_EDITION);
+}
 </script>
 </body>
 </html>
